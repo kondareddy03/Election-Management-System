@@ -1,0 +1,157 @@
+def menu():
+    print("WELCOME TO ELECTION CANDIDATES DATA MANAGEMENT SYSTEM")
+    ch = "y"
+    while ch == "y":
+        print("1. CREATION OF TABLE AND DATABASE")
+        print("2. ADD CANDIDATE'S DETAILS ")
+        print("3. UPDATE CANDIDATE'S DETAILS ")
+        print("4. DELETE CANDIDATE'S DETAILS")
+        print("5. DISPLAY CANDIDATE'S DETAILS ")
+        print("6. SELECTION CANDIDATE'S DETAILS ")
+        print("7. EXIT")
+        choice = int(input("PLEASE ENTER YOUR CHOICE(1-7): "))
+        if choice == 1:
+            creation()
+        elif choice == 2:
+            adddata()
+        elif choice == 3:
+            updatedata()
+        elif choice == 4:
+            deletedata()
+        elif choice == 5:
+            displaydata()
+        elif choice == 6:
+            searchdata()
+        elif choice == 7:
+            print("THANK YOU FOR USING ELECTION CANDIDATES DATA MANAGEMENT SYSTEM")
+            break
+        else:
+            print("WRONG CHOICE")
+        ch = input("Do you want to continue or not(y/n): ")
+
+def creation():
+    import mysql.connector as ms
+    mycon = ms.connect(host="localhost", user="root", passwd="konda")
+    cursor = mycon.cursor()
+    cursor.execute("create database if not exists Candidates")
+    cursor.execute("use Candidates")
+    cursor.execute("""create table if not exists ELECTION(
+                        CD_no int(30), 
+                        CN_Number int(10), 
+                        Constituency varchar(20), 
+                        Pv_number int(10), 
+                        Candidates_Name varchar(50), 
+                        Party varchar(20), 
+                        Age int(10), 
+                        Educa varchar(50), 
+                        Votes int(30), 
+                        CR_no int(10), 
+                        Email_id varchar(50), 
+                        Profession varchar(50), 
+                        Gen varchar(10)
+                    )""")
+    mycon.commit()
+    print("CREATION OF DATABASE AND TABLE DONE SUCCESSFULLY")
+
+def adddata():
+    import mysql.connector as ms
+    mycon = ms.connect(host="localhost", user="root", passwd="konda", database="Candidates")
+    cursor = mycon.cursor()
+    a = int(input("How many records you want to enter: "))
+    for i in range(a):
+        cd = int(input("Enter the Candidate Details Number: "))
+        cn = int(input("Enter the Constituency Number: "))
+        cs = input("Enter name of the Constituency: ")
+        pvn = float(input("Enter the Popular Vote number: "))
+        cdn = input("Enter the name of the Candidate: ")
+        py = input("Enter the name of the Party: ")
+        ag = int(input("Enter the Age of the Candidate: "))
+        ed = input("Enter the Qualification of the Candidate: ")
+        vt = int(input("Enter the number of Votes secured: "))
+        cmr = int(input("Enter the number of Criminal cases on the Candidate: "))
+        eid = input("Enter the Email Id of the Candidate: ")
+        spn = input("Enter the Self Profession of the Candidate: ")
+        gnd = input("Enter the Gender of the Candidate: ")
+        query = """insert into ELECTION values({}, {}, '{}', {}, '{}', '{}', {}, '{}', {}, {}, '{}', '{}', '{}')""".format(cd, cn, cs, pvn, cdn, py, ag, ed, vt, cmr, eid, spn, gnd)
+        cursor.execute(query)
+    mycon.commit()
+    print("RECORDS ADDED SUCCESSFULLY")
+
+def updatedata():
+    import mysql.connector as ms
+    mycon = ms.connect(host="localhost", user="root", passwd="konda", database="Candidates")
+    cursor = mycon.cursor()
+    pv = int(input("Enter the Candidates Details Number: "))
+    query = "select * from ELECTION where CD_no={}".format(pv)
+    cursor.execute(query)
+    data = cursor.fetchone()
+    if data != None:
+        print("The searched data is: ")
+        print(data)
+        ans = input("Do you want to update Candidates Details Number(y/n): ")
+        if ans == "y":
+            pop = int(input("Enter the new Candidates Details Number: "))
+            query = "update ELECTION set CD_no={} where CD_no={}".format(pop, pv)
+            cursor.execute(query)
+            mycon.commit()
+            print("RECORD UPDATED SUCCESSFULLY")
+    else:
+        print("NO SUCH RECORD FOUND")
+
+def deletedata():
+    import mysql.connector as ms
+    mycon = ms.connect(host="localhost", user="root", passwd="konda", database="Candidates")
+    cursor = mycon.cursor()
+    pv = int(input("Enter the Candidates Details Number: "))
+    query = "select * from ELECTION where CD_no={}".format(pv)
+    cursor.execute(query)
+    data = cursor.fetchone()
+    if data != None:
+        print("The searched data is: ")
+        print(data)
+        ans = input("Do you want to delete this record(y/n): ")
+        if ans == "y":
+            query = "delete from ELECTION where CD_no={}".format(pv)
+            cursor.execute(query)
+            mycon.commit()
+            print("RECORD DELETED SUCCESSFULLY")
+    else:
+        print("NO SUCH RECORD FOUND")
+
+def displaydata():
+    import mysql.connector as ms
+    mycon = ms.connect(host="localhost", user="root", passwd="konda", database="Candidates")
+    cursor = mycon.cursor()
+    cursor.execute("select * from ELECTION")
+    for row in cursor:
+        print(" CANDIDATES DATA ")
+        print("Candidates Details Number :", row[0])
+        print("Constituency number :", row[1])
+        print("Constituency :", row[2])
+        print("Popular Vote Number :", row[3])
+        print("Candidate Name :", row[4])
+        print("Party :", row[5])
+        print("Age of the Candidate :", row[6])
+        print("Qualification of the Candidate :", row[7])
+        print("Number of Votes secured :", row[8])
+        print("Number of Criminal Records :", row[9])
+        print("Email Id of the Candidate :", row[10])
+        print("Self Profession of the Candidate :", row[11])
+        print("Gender of the Candidate :", row[12])
+        print("\n")
+
+def searchdata():
+    import mysql.connector as ms
+    mycon = ms.connect(host="localhost", user="root", password="konda", database="Candidates")
+    cursor = mycon.cursor()
+    cursor.execute("SELECT * FROM ELECTION where Gen='F' order by CD_no ASC ")
+    result = cursor.fetchall()
+    ans = input("Do you want to Search(y/n): ")
+    if result != None:
+        print("The searched data is: ")
+        if ans == "y":
+            print(result)
+        else:
+            print("THANK YOU FOR TRYING SEARCHDATA")
+
+menu()
